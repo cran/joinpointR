@@ -1,0 +1,33 @@
+Package: joinpointR
+Type: Package
+Title: Tidy Tools for Joinpoint Regression Models
+Version: 0.5.0
+Authors@R: 
+    person(
+        "Tamara", "Ricardo", , 
+        email ="tamararicardo83@gmail.com", 
+        role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0002-0921-2611"))
+Description: Provides tools to fit joinpoint regression models with a log-linear 
+    specification by levels of a categorical variable. The package acts as a 
+    wrapper around the 'segmented' package, facilitating model fitting, selection, 
+    and interpretation. It includes functions to estimate the Annual Percent Change 
+    (APC) and the Average Annual Percent Change (AAPC), along with their 95% 
+    confidence intervals, and to generate formatted summary tables and plots of results.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Imports: dplyr, purrr, tidyr, tibble, ggplot2, segmented, scales,
+        flextable, rlang, stringr, stats, officer
+RoxygenNote: 7.3.3
+URL: https://github.com/datos-ine/joinpointR
+BugReports: https://github.com/datos-ine/joinpointR/issues
+Suggests: testthat (>= 3.0.0)
+Config/testthat/edition: 3
+NeedsCompilation: no
+Packaged: 2026-04-29 14:58:19 UTC; user
+Author: Tamara Ricardo [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-0921-2611>)
+Maintainer: Tamara Ricardo <tamararicardo83@gmail.com>
+Depends: R (>= 4.1.0)
+Repository: CRAN
+Date/Publication: 2026-05-02 09:50:02 UTC
