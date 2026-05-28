@@ -1,12 +1,12 @@
-e28e94a928c8499d26f90d022ce863d2 *DESCRIPTION
+70edb018abbdd2cdfb0b7b2b5755b207 *DESCRIPTION
 eea3c21cf4b392bb6a896a32ed8a1b52 *LICENSE
 c7e130c92bbbdb325cfb24f86c05d751 *NAMESPACE
-2fd8fd747223f027dd2972e739f3bb1e *NEWS.md
+b306b530d703f667eff0f999ed7cfb0e *NEWS.md
 1aa43ef0816b205d7ae6093ebceaee8f *R/get_aapc.R
 9e4f91049cdaa2ec45679b4011b1240a *R/get_apc.R
 c693a1be18b7165ce9bba1995a1e5297 *R/gg_jpoint.R
 10f5404f00daee358301560a5938d428 *R/globals.R
-8191503a857ac20097c9149e86d85cf1 *R/model_jp.R
+fcf4b0a6e97aadaa8595ee7e7a87de32 *R/model_jp.R
 be2bc205120cc0f7cb0ad6e60ed6af59 *R/summary_jp.R
 3bcc5f87764acd05dd9db1628f9ae2ac *R/utils.R
 25361cecc3e3ad0a158de20dab0de530 *README.md
