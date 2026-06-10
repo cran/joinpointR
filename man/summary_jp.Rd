@@ -2,48 +2,43 @@
 % Please edit documentation in R/summary_jp.R
 \name{summary_jp}
 \alias{summary_jp}
-\title{Summary Table For Joinpoint Regression Models}
+\title{Summary Tables for Joinpoint Regression Models}
 \usage{
-summary_jp(
-  mods,
-  digits = 1,
-  var1 = "group",
-  var2 = "subgroup",
-  ft = FALSE,
-  lan = c("en", "es")
-)
+summary_jp(mods, digits = 1, dec = c(".", ","))
 }
 \arguments{
-\item{mods}{List of joinpoint regression models (model_jp() output).}
+\item{mods}{A list of models returned by \code{model_jp()}.}
 
-\item{digits}{Number of decimal places to display (integer).}
+\item{digits}{Integer. Number of decimal places used to display the results.}
 
-\item{var1}{Character. Name of the grouping variable.}
-
-\item{var2}{Character. Name of the subgrouping variable (optional).}
-
-\item{ft}{Logical. If TRUE returns a flextable object, if FALSE returns a tibble.}
-
-\item{lan}{Language of output: "en" (English) or "es" (Spanish).}
+\item{dec}{Character. Decimal separator to use (e.g. \code{"."} or \code{","}).}
 }
 \value{
-A tibble or a flextable object.
+A tibble with one row per segment containing the grouping variable(s),
+number of joinpoints (JP), time period(s), APC and its 95\% confidence
+interval, and AAPC with significance stars.
 }
 \description{
-Generates a table displaying the number of joinpoints, time breaks, APC and its 95\% confidence
-interval, and AAPC and its statistical significance from a list of joinpoint models.
+Generates summary tables for one or more joinpoint regression models,
+including the number of joinpoints (JP), time periods, Annual Percent
+Change (APC) with 95\% confidence intervals, and Average Annual Percent
+Change (AAPC) with statistical significance.
 }
 \examples{
-library(dplyr)
 # Load example data
-data("plant", package = "segmented")
+data(hiv_data)
 
-names(plant)
+# Fit joinpoint models
+mods <- model_jp(
+  data = hiv_data,
+  value = hiv_rate,
+  time = year,
+  group = "region"
+)
 
-# Fit the joinpoint models
-mods <- model_jp(data = plant, value = "y", time = "time", group = "group", k = 2, test = TRUE)
+# Summarize models
+summary_jp(mods, digits = 1, dec = ".")
 
-summary_jp(mods, digits = 1, var1 = "group", ft = FALSE, lan = "en")
 }
 \author{
 Tamara Ricardo

@@ -4,37 +4,106 @@
 \alias{gg_jpoint}
 \title{Plot Joinpoint Regression Models}
 \usage{
-gg_jpoint(mods, obs = TRUE, jp = TRUE, facets = FALSE)
+gg_jpoint(
+  mods,
+  obs = TRUE,
+  psize = 2.5,
+  ptr = 0.75,
+  jp = TRUE,
+  facets = c("wrap", "grid", "none"),
+  ncol = 4,
+  cb = TRUE,
+  cbpal = c("viridis", "managua", "plasma", "roma", "vanimo", "algae", "arches2",
+    "glasgow", "tokyo", "blue_fluoride")
+)
 }
 \arguments{
-\item{mods}{List of joinpoint regression models (output of model_jp()).}
+\item{mods}{A list of joinpoint regression models returned by \code{model_jp()}.}
 
-\item{obs}{Logical. If TRUE, displays observed data points.}
+\item{obs}{Logical. If \code{TRUE}, observed data points are displayed.}
 
-\item{jp}{Logical. If TRUE, displays joinpoints as vertical dashed lines.}
+\item{psize}{Numeric. Size of the observed data points.}
 
-\item{facets}{Logical. If TRUE, displays one panel per group using facets.}
+\item{ptr}{Numeric. Transparency level of the observed data points (0-1).}
+
+\item{jp}{Logical. If \code{TRUE}, joinpoints are displayed as vertical dashed lines.}
+
+\item{facets}{Character. Determines the facet layout: \code{"none"} for a single
+panel, \code{"wrap"} for faceting by group, or \code{"grid"} for faceting by group
+and subgroup.}
+
+\item{ncol}{Numeric. Number of columns to display when \code{facets = "wrap"}.}
+
+\item{cb}{Logical. If \code{TRUE}, a colorblind-friendly palette is used.}
+
+\item{cbpal}{Character. Name of the colorblind-friendly palette to use.
+See Details.}
 }
 \value{
-A ggplot object.
+A \code{ggplot} object showing observed values, fitted joinpoint regression
+lines, and optional joinpoints.
 }
 \description{
 Creates a ggplot showing observed values, fitted joinpoint regression lines,
 and optional joinpoints.
 }
-\examples{
-library(dplyr)
-# Load example data
-data("plant", package = "segmented")
+\details{
+Available colorblind-friendly palettes from the \code{cols4all} package include:
 
-names(plant)
+Diverging palettes:
+\itemize{
+\item \code{"managua"}
+\item \code{"plasma"}
+\item \code{"roma"}
+\item \code{"vanimo"}
+\item \code{"viridis"}
+}
+
+Sequential palettes:
+\itemize{
+\item \code{"algae"}
+\item \code{"arches2"}
+\item \code{"blue_fluoride"}
+\item \code{"glasgow"}
+\item \code{"tokyo"}
+}
+}
+\examples{
+# Load example data
+data(hiv_data)
 
 # Fit the joinpoint models
-mods <- model_jp(data = plant, value = "y", time = "time", group = "group", k = 2, test = TRUE)
+mods <- model_jp(
+  data = hiv_data,
+  value = hiv_rate,
+  time = year,
+  group = c("region", "sex"),
+  k = 2,
+  test = TRUE
+)
 
 # Plot results
-gg_jpoint(mods, obs = TRUE, jp = TRUE, facets = FALSE)
+gg_jpoint(mods, obs = TRUE, jp = TRUE, facets = "wrap")
 
-# Facets by group
-gg_jpoint(mods, obs = TRUE, jp = TRUE, facets = TRUE)
+# Facet by group and subgroup
+gg_jpoint(mods, obs = TRUE, jp = TRUE, facets = "grid")
+
+# Single panel without joinpoints
+gg_jpoint(mods, jp = FALSE, facets = "none")
+
+# Use a different colorblind-friendly palette
+gg_jpoint(
+  mods,
+  obs = TRUE,
+  jp = TRUE,
+  facets = "grid",
+  cb = TRUE,
+  cbpal = "managua"
+)
+
+# Use default ggplot2 palette (can be changed using `scale_color_`)
+gg_jpoint(
+mods,
+cb = FALSE
+)
 }

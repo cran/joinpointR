@@ -1,39 +1,61 @@
 #' Average Annual Percent Change (AAPC)
 #'
-#' Estimates the Average Annual Percent Change (AAPC) and its 95% confidence
-#' interval. Optionally displays statistical significance using significance
-#' stars.
+#' Estimates the Average Annual Percent Change (AAPC) and its corresponding
+#' 95% confidence interval for one or more regression models. Optionally,
+#' statistical significance can be displayed using significance stars instead
+#' of confidence intervals.
 #'
-#' @param mod Joinpoint regression model (segmented object) or linear regression model (lm object).
-#' @param digits Number of decimal places to display (integer).
-#' @param show_ci Logical; if TRUE, displays the 95% confidence interval.
-#'   If FALSE, displays significance stars.
-#' @param dec Character. Decimal separator to use (e.g., "." or ",").
+#' @param mods A joinpoint regression model, a list of joinpoint regression
+#'   models returned by \code{model_jp()}, or linear regression models (`lm`
+#'   objects).
+#' @param digits Integer. Number of decimal places used to display the results.
+#' @param show_ci Logical. If `TRUE`, displays the 95% confidence interval.
+#'   If `FALSE`, displays significance stars.
+#' @param dec Character. Decimal separator to use (`"."` or `","`).
 #'
-#' @return A character string with the AAPC and either its 95% confidence
-#' interval or significance stars.
+#' @return
+#' A tibble with one row per model containing the estimated AAPC and either
+#' its 95% confidence interval or significance stars.
+#'
 #' @author Tamara Ricardo
-#' @export
 #'
 #' @examples
 #' # Load example data
-#' data("plant", package = "segmented")
+#' data(hiv_data)
 #'
-#' names(plant)
+#' # Fit joinpoint models
+#' mods <- model_jp(
+#'   data = hiv_data,
+#'   value = "hiv_rate",
+#'   time = "year",
+#'   group = "region",
+#'   k = 2,
+#'   test = TRUE
+#' )
 #'
-#' # Fit the joinpoint models
-#' mods <- model_jp(data = plant, value = "y", time = "time", group = "group", k = 2, test = TRUE)
+#' # AAPC with 95% confidence intervals
+#' get_aapc(mods, digits = 1, show_ci = TRUE, dec = ".")
 #'
-#' # AAPC of the first model
-#' get_aapc(mods$RKW, digits = 1, show_ci = TRUE, dec = ".")
+#' # AAPC with significance stars
+#' get_aapc(mods, show_ci = FALSE)
+#'
+#' # AAPC for a single model
+#' get_aapc(mods$Central)
+#'
+#' @export
 
-get_aapc <- function(mod, digits = 1, show_ci = TRUE, dec = ".") {
-  # ---- Validations ----
-  if (!inherits(mod, c("segmented", "lm"))) {
-    stop("`mod` must be an object of class 'segmented' or 'lm'")
+get_aapc <- function(
+  mods,
+  digits = 1,
+  show_ci = TRUE,
+  dec = "."
+) {
+  # ---- Allow a single model or a list of models ----
+  if (inherits(mods, c("lm", "segmented"))) {
+    mods <- list(mods)
   }
 
-  # ---- Helpers ----
+  # ---- Format of 95% CI ----
   fmt_ci <- function(x, y, z) {
     paste0(
       scales::percent(x, accuracy = 10^-digits, decimal.mark = dec),
@@ -45,6 +67,7 @@ get_aapc <- function(mod, digits = 1, show_ci = TRUE, dec = ".") {
     )
   }
 
+  # ---- Format of significance stars ----
   fmt_stars <- function(x, stars) {
     paste0(
       scales::percent(x, accuracy = 10^-digits, decimal.mark = dec),
@@ -52,30 +75,38 @@ get_aapc <- function(mod, digits = 1, show_ci = TRUE, dec = ".") {
     )
   }
 
-  # ---- Calculations ----
-  if (inherits(mod, "segmented")) {
-    aapc_obj <- segmented::aapc(mod)
+  # ---- Estimate AAPC for each model in the list ----
+  purrr::map_dfr(
+    mods,
+    \(mod) {
+      ## ---- Segmented objects ----
+      if (inherits(mod, "segmented")) {
+        aapc_obj <- segmented::aapc(mod)
 
-    est <- unname(aapc_obj[grep("Est", names(aapc_obj))])
-    lci <- unname(aapc_obj[grep("\\.l", names(aapc_obj))])
-    uci <- unname(aapc_obj[grep("\\.u", names(aapc_obj))])
-  } else {
-    beta <- stats::coef(mod)[2]
+        AAPC <- unname(aapc_obj[grep("Est", names(aapc_obj))])
+        CI_low <- unname(aapc_obj[grep("\\.l", names(aapc_obj))])
+        CI_upp <- unname(aapc_obj[grep("\\.u", names(aapc_obj))])
+      } else {
+        ## ---- Linear models ----
+        beta <- stats::coef(mod)[2]
+        AAPC <- exp(beta) - 1
 
-    est <- exp(beta) - 1
-    ci <- stats::confint(mod)[2, ]
+        CI <- stats::confint(mod)[2, ]
+        CI_low <- exp(CI[1]) - 1
+        CI_upp <- exp(CI[2]) - 1
+      }
 
-    lci <- exp(ci[1]) - 1
-    uci <- exp(ci[2]) - 1
-  }
+      stars <- ifelse(CI_low > 0 | CI_upp < 0, "*", "")
 
-  # ---- Significance based on CI ----
-  stars <- ifelse(lci > 0 | uci < 0, "*", "")
-
-  # ---- Output ----
-  if (show_ci) {
-    fmt_ci(est, lci, uci)
-  } else {
-    fmt_stars(est, stars)
-  }
+      # ---- Return object ----
+      tibble::tibble(
+        AAPC = if (show_ci) {
+          fmt_ci(AAPC, CI_low, CI_upp)
+        } else {
+          fmt_stars(AAPC, stars)
+        }
+      )
+    },
+    .id = "model"
+  )
 }

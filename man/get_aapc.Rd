@@ -4,38 +4,53 @@
 \alias{get_aapc}
 \title{Average Annual Percent Change (AAPC)}
 \usage{
-get_aapc(mod, digits = 1, show_ci = TRUE, dec = ".")
+get_aapc(mods, digits = 1, show_ci = TRUE, dec = ".")
 }
 \arguments{
-\item{mod}{Joinpoint regression model (segmented object) or linear regression model (lm object).}
+\item{mods}{A joinpoint regression model, a list of joinpoint regression
+models returned by \code{model_jp()}, or linear regression models (\code{lm}
+objects).}
 
-\item{digits}{Number of decimal places to display (integer).}
+\item{digits}{Integer. Number of decimal places used to display the results.}
 
-\item{show_ci}{Logical; if TRUE, displays the 95\% confidence interval.
-If FALSE, displays significance stars.}
+\item{show_ci}{Logical. If \code{TRUE}, displays the 95\% confidence interval.
+If \code{FALSE}, displays significance stars.}
 
-\item{dec}{Character. Decimal separator to use (e.g., "." or ",").}
+\item{dec}{Character. Decimal separator to use (\code{"."} or \code{","}).}
 }
 \value{
-A character string with the AAPC and either its 95\% confidence
-interval or significance stars.
+A tibble with one row per model containing the estimated AAPC and either
+its 95\% confidence interval or significance stars.
 }
 \description{
-Estimates the Average Annual Percent Change (AAPC) and its 95\% confidence
-interval. Optionally displays statistical significance using significance
-stars.
+Estimates the Average Annual Percent Change (AAPC) and its corresponding
+95\% confidence interval for one or more regression models. Optionally,
+statistical significance can be displayed using significance stars instead
+of confidence intervals.
 }
 \examples{
 # Load example data
-data("plant", package = "segmented")
+data(hiv_data)
 
-names(plant)
+# Fit joinpoint models
+mods <- model_jp(
+  data = hiv_data,
+  value = "hiv_rate",
+  time = "year",
+  group = "region",
+  k = 2,
+  test = TRUE
+)
 
-# Fit the joinpoint models
-mods <- model_jp(data = plant, value = "y", time = "time", group = "group", k = 2, test = TRUE)
+# AAPC with 95\% confidence intervals
+get_aapc(mods, digits = 1, show_ci = TRUE, dec = ".")
 
-# AAPC of the first model
-get_aapc(mods$RKW, digits = 1, show_ci = TRUE, dec = ".")
+# AAPC with significance stars
+get_aapc(mods, show_ci = FALSE)
+
+# AAPC for a single model
+get_aapc(mods$Central)
+
 }
 \author{
 Tamara Ricardo
