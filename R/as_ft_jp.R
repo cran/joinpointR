@@ -51,7 +51,7 @@ jp_to_ft <- function(
         Periodo = period,
         JP = jp
       ) |>
-      tidyr::unite(c(CI_low, CI_upp), col = "IC", sep = "; ") |>
+      tidyr::unite(c(CI_low, CI_upp), col = "IC", sep = "; ", na.rm = TRUE) |>
       dplyr::mutate(
         dplyr::across(
           .cols = c(APC, IC, AAPC),
@@ -76,7 +76,7 @@ jp_to_ft <- function(
         Period = period,
         JP = jp
       ) |>
-      tidyr::unite(c(CI_low, CI_upp), col = "CI", sep = "; ")
+      tidyr::unite(c(CI_low, CI_upp), col = "CI", sep = "; ", na.rm = TRUE)
 
     if ("subgroup" %in% names(tab)) {
       tab <- tab |>

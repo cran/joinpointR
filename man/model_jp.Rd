@@ -4,7 +4,16 @@
 \alias{model_jp}
 \title{Joinpoint Regression Models by Groups}
 \usage{
-model_jp(data, value, time, group, k = 2, step = TRUE, test = TRUE)
+model_jp(
+  data,
+  value,
+  time,
+  group,
+  k = 2,
+  min_dist = 3,
+  step = TRUE,
+  test = TRUE
+)
 }
 \arguments{
 \item{data}{A data frame containing age-standardized rates.}
@@ -16,6 +25,9 @@ model_jp(data, value, time, group, k = 2, step = TRUE, test = TRUE)
 \item{group}{Names of one or more grouping variables.}
 
 \item{k}{Maximum number of joinpoints to estimate.}
+
+\item{min_dist}{Minimum number of observations required per segment.
+Defaults to 3 to prevent joinpoints from being too close.}
 
 \item{step}{Logical. If \code{TRUE}, uses a stepwise procedure to select the
 number of joinpoints based on BIC. If \code{FALSE}, fits a model with a
@@ -50,12 +62,6 @@ of joinpoints according to the length of the time series (Kim et al., 2000):
 \item 32--36 time points: 6 joinpoints.
 \item 37 or more time points: 7 joinpoints.
 }
-
-#' @references
-Kim HJ, Fay MP, Feuer EJ, Midthune DN (2000).
-"Permutation Tests for Joinpoint Regression with Applications to Cancer Rates."
-\emph{Statistics in Medicine}, 19(3), 335--351.
-doi:10.1002/(sici)1097-0258(20000215)19:3<335::aid-sim336>3.0.co;2-z.
 }
 \examples{
 # Load example data
@@ -66,7 +72,7 @@ levels(hiv_data$region)
 
 # Fit models
 mods <- model_jp(data = hiv_data, value = hiv_rate, time = year, group = c("region", "sex"),
- k = 2, step = TRUE, test = TRUE)
+ k = 2, min_dist = 3, step = TRUE, test = TRUE)
 
 # Show the output of the first model by calling its index
 mods[[1]]
@@ -74,6 +80,20 @@ mods[[1]]
 # Same output will be obtained when calling model name
 mods$Central
 
+}
+\references{
+Kim HJ, Fay MP, Feuer EJ, Midthune DN (2000).
+"Permutation Tests for Joinpoint Regression with Applications to Cancer Rates."
+\emph{Statistics in Medicine}, 19(3), 335--351.
+doi:10.1002/(sici)1097-0258(20000215)19:3<335::aid-sim336>3.0.co;2-z.
+
+Muggeo, V.M.R., Adelfio, G. (2011).
+Efficient change point detection in genomic sequences of continuous
+measurements. \emph{Bioinformatics}, 27, 161–166.
+
+Muggeo, Vito. (2020).
+Selecting number of breakpoints in segmented regression:
+implementation in the R package segmented. 10.13140/RG.2.2.12891.39201.
 }
 \author{
 Tamara Ricardo

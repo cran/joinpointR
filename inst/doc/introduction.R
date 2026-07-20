@@ -22,6 +22,7 @@ mod1 <- model_jp(
   time = year,
   group = "sex",
   k = 3,
+  min_dist = 3,
   step = TRUE,
   test = TRUE
 )
@@ -36,6 +37,7 @@ mod2 <- model_jp(
   time = year,
   group = "sex",
   k = 1,
+  min_dist = 3,
   step = FALSE,
   test = FALSE
 )
