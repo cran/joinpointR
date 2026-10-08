@@ -2,108 +2,83 @@
 % Please edit documentation in R/gg_jpoint.R
 \name{gg_jpoint}
 \alias{gg_jpoint}
+\alias{gg_jpoint_area}
+\alias{gg_jpoint_line}
 \title{Plot Joinpoint Regression Models}
 \usage{
 gg_jpoint(
-  mods,
-  obs = TRUE,
-  psize = 2.5,
-  ptr = 0.75,
+  models,
+  geom = c("linepoint", "line", "area"),
+  facets = c("wrap", "grid", "grid2"),
+  color.by = NULL,
   jp = TRUE,
-  facets = c("wrap", "grid", "none"),
-  ncol = 4,
-  cb = TRUE,
-  cbpal = c("viridis", "managua", "plasma", "roma", "vanimo", "algae", "arches2",
-    "glasgow", "tokyo", "blue_fluoride")
+  aapc = FALSE,
+  time.var = c("year", "yearmon"),
+  ...
 )
+
+gg_jpoint_area(models, ...)
+
+gg_jpoint_line(models, ...)
 }
 \arguments{
-\item{mods}{A list of joinpoint regression models returned by \code{model_jp()}.}
+\item{models}{A model or a list of models of class \code{model_jp}, returned
+by \code{model_jp_grid()}.}
 
-\item{obs}{Logical. If \code{TRUE}, observed data points are displayed.}
+\item{geom}{Character. Determines how the model results are displayed.
+\code{geom = "line"} displays the fitted regression lines;
+\code{geom = "linepoint"} displays the fitted regression lines together
+with the observed data points; and \code{geom = "area"} displays the
+fitted lines with background color depending on the grouping variable,
+time period or trend. Defaults to \code{"linepoint"}.}
 
-\item{psize}{Numeric. Size of the observed data points.}
+\item{facets}{Character. Determines the facet layout. \code{facets = "wrap"}
+displays one facet for each grouping level; \code{facets = "grid"}
+displays groups in rows and subgroups in columns; and
+\code{facets = "grid2"} displays subgroups in rows and groups in columns.
+This argument is ignored when only one model is provided.}
 
-\item{ptr}{Numeric. Transparency level of the observed data points (0-1).}
+\item{color.by}{Character. Determines whether the data should be colored using
+the grouping variable (\code{"group"}), the time periods (\code{"period"}),
+the time segments (\code{"segment"}), or the APC trend (\code{"trend"}).
+Defaults to \code{"group"} for \code{geom = "linepoint"}, to \code{"period"}
+for \code{geom = "area"}, and to \code{"segment"} for \code{geom = "line"}.}
 
-\item{jp}{Logical. If \code{TRUE}, joinpoints are displayed as vertical dashed lines.}
+\item{jp}{Logical. Whether to display the estimated joinpoint(s) as
+vertical lines. Defaults to \code{TRUE}.}
 
-\item{facets}{Character. Determines the facet layout: \code{"none"} for a single
-panel, \code{"wrap"} for faceting by group, or \code{"grid"} for faceting by group
-and subgroup.}
+\item{aapc}{Logical. Whether to display a label with the Average Annual
+Percent Change (AAPC) and its statistical significance. Defaults to
+\code{FALSE}.}
 
-\item{ncol}{Numeric. Number of columns to display when \code{facets = "wrap"}.}
+\item{time.var}{Character. Determines the class of the time variable,
+among \code{"year"} and \code{"yearmon"}. Defaults to \code{"year"}.}
 
-\item{cb}{Logical. If \code{TRUE}, a colorblind-friendly palette is used.}
-
-\item{cbpal}{Character. Name of the colorblind-friendly palette to use.
-See Details.}
+\item{...}{Additional arguments passed to \code{ggplot2}.}
 }
 \value{
-A \code{ggplot} object showing observed values, fitted joinpoint regression
-lines, and optional joinpoints.
+A \code{ggplot2} object showing observed values, fitted joinpoint
+regression lines, and optionally the estimated joinpoints and AAPC.
 }
 \description{
-Creates a ggplot showing observed values, fitted joinpoint regression lines,
-and optional joinpoints.
+Creates a \code{ggplot2} visualization of joinpoint regression models,
+showing observed values, fitted regression lines, and optionally the
+estimated joinpoints and Average Annual Percent Change (AAPC).
 }
 \details{
-Available colorblind-friendly palettes from the \code{cols4all} package include:
-
-Diverging palettes:
-\itemize{
-\item \code{"managua"}
-\item \code{"plasma"}
-\item \code{"roma"}
-\item \code{"vanimo"}
-\item \code{"viridis"}
-}
-
-Sequential palettes:
-\itemize{
-\item \code{"algae"}
-\item \code{"arches2"}
-\item \code{"blue_fluoride"}
-\item \code{"glasgow"}
-\item \code{"tokyo"}
-}
+Available colorblind-friendly palettes can be checked using
+\code{plot_cbpal()}.
 }
 \examples{
-# Load example data
-data(hiv_data)
+# Create an example dataset
+data <- hiv_data |>
+dplyr::filter(admin \%in\% c("CABA", "Catamarca"))
 
-# Fit the joinpoint models
-mods <- model_jp(
-  data = hiv_data,
-  value = hiv_rate,
-  time = year,
-  group = c("region", "sex"),
-  k = 2,
-  test = TRUE
-)
+# Fit models
+mods <- model_jp_grid(data = data, rate = hiv_rate, time = year,
+group = c("admin", "sex"))
 
-# Plot results
-gg_jpoint(mods, obs = TRUE, jp = TRUE, facets = "wrap")
+# Plot results with AAPC
+gg_jpoint(models = mods, aapc = TRUE)
 
-# Facet by group and subgroup
-gg_jpoint(mods, obs = TRUE, jp = TRUE, facets = "grid")
-
-# Single panel without joinpoints
-gg_jpoint(mods, jp = FALSE, facets = "none")
-
-# Use a different colorblind-friendly palette
-gg_jpoint(
-  mods,
-  obs = TRUE,
-  jp = TRUE,
-  facets = "grid",
-  cb = TRUE,
-  cbpal = "managua"
-)
-
-# Use default ggplot2 palette (can be changed using `scale_color_`)
-gg_jpoint(
-mods,
-cb = FALSE
-)
 }

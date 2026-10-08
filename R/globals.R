@@ -1,1 +1,1 @@
-utils::globalVariables(c(".data", "grupo"))
+utils::globalVariables(c("cbpal_list", "hiv_data", "mods"))

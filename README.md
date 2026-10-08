@@ -1,10 +1,6 @@
-# joinpointR
 
-## 🇪🇸 Español
+# joinpointR 2.0 <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
-El objetivo de **joinpointR** es ajustar modelos de regresión *joinpoint* por grupos y generar resúmenes en formato *tidy* del Cambio Porcentual Anual (APC) y del Cambio Porcentual Anual Promedio (AAPC), facilitando el análisis de tendencias en estudios epidemiológicos.
-
----
 
 ## 🇬🇧 English
 
@@ -12,131 +8,115 @@ The goal of **joinpointR** is to fit *joinpoint regression models* by groups and
 
 ---
 
-## Installation / Instalación
+## Installation
 
-You can install the development version from GitHub / Podés instalar la versión en desarrollo desde GitHub:
+The development version of `joinpointR` can be installed from Github using the command:
 
-```r
-# install.packages("pak")
-pak::pak("datos-ine/joinpointR")
+``` r
+remotes::install_github("https://github.com/datos-ine/joinpointR")
 ```
 
-Repository: https://github.com/datos-ine/joinpointR
+## Workflow
+The package provides a simple and reproducible workflow:
+* Fit joinpoint models by group using the grid-search method.
+* Generate summary tables with the fitted joinpoints, annual percent change (APC) and its confidence interval (CI), and average annual percent change (AAPC) and its CI.
+* Optionally, extract the APC, AAPC and Bayesian Information Criteria of a single model or a list of models.
+* Generate summary plots.
 
-## Workflow / Flujo de trabajo
+## Main functions
+* `model_jp_grid()` or `model_jp()` → Fits joinpoint regression models by groups of up to two categorical variables.
+* `get_summary()`, `get_apc()`, and `get_aapc()` → Returns a table with summary statistics for a model or a list of models of class `"model_jp"`.
+* `gg_jpoint()` → Generate summary plots for a model or a list of models of class `"model_jp"`.
 
-The package provides a simple and reproducible workflow / El paquete propone un flujo simple y reproducible:
-
-* Fit joinpoint models by group / Ajustar modelos joinpoint por grupo
-* Extract APC by segment / Extraer APC por segmento
-* Compute AAPC / Calcular AAPC
-* Generate summary tables / Generar tablas resumen
-* Generate summary plots / Generar gráficos de resumen
-
-## Main functions / Funciones principales
-* `model_jp()` → fits joinpoint models by group / ajusta modelos joinpoint por grupo
-* `get_apc()` → extracts APC by segment / extrae APC por segmento
-* `get_aapc()` → computes AAPC / computa AAPC
-* `summary_jp()` → generates summary tables (tibble) / genera tablas resumen (tibble)
-* `jp_to_ft()` → transforms summary tables into flextable objects / transforma tablas de resumen a objetos flextable
-* `gg_jpoint()`→ generates summary plots / genera gráficos de resumen
-
-## Example / Ejemplo
-```r
+## Example
+``` r
+# Load packages
 library(joinpointR)
-library(dplyr)
 
-data("hiv_data")
+# Load data
+data(hiv_data)
 
-mods <- model_jp(
-  data = hiv_data,
-  value = hiv_rate,
-  time = year,
-  group = "region",
-  step = TRUE
-)
+data_mod <- hiv_data |>
+    dplyr::filter(admin == "ARG")
 
-# APC (only works when class segmented lm)
-get_apc(mods$Central, digits = 1, time = "year", dec = ".")
+# Fit the joinpoint models
+mods <- model_jp_grid(data = data_mod, rate = "hiv_rate", time = "year", group = "sex")
 
-# AAPC with 95% CI
-get_aapc(mods$Central, show_ci = TRUE)
+# BIC of the model
+bic_jp(mods)
 
-# AAPC with significance stars
-get_aapc(mods$Central, show_ci = FALSE)
+# Summary table
+get_summary(mods)
 
-# Summary Table
-summary_jp(mods)
-
-# Transform to flextable
-summary_jp(mods) |>
-jp_to_ft()
-
-# Generate summary plot
-gg_jpoint(mods)
-```
-
-### Formatted table / Tabla formateada
-```r
-# English (default)
-summary_jp(mods) |>
-jp_to_ft()
-
-# Spanish
-summary_jp(mods) |>
-jp_to_ft(lan = "es")
-
-```
-
-Returns a table ready for reporting (e.g., Word) using flextable. / Devuelve una tabla lista para exportar a Word o informes mediante `flextable`.
-
-### Output/Salida
-
-The generated table includes / La tabla generada incluye:
-
-* Number of joinpoints / Número de joinpoints (JP)
-* Time periods for each segment / Períodos de cada segmento
-* APC per segment / por segmento
-* 95% Confidence intervals / Intervalos de confianza al 95%
-* AAPC (global tendency / tendencia global)
-
-### Plots / Gráficos
-```r
 # Plot results
-mods |>
-  gg_jpoint(obs = TRUE, jp = TRUE)
+gg_jpoint(mods)
+``` 
+## Notes
+* The response variable is log-transformed.
+* Model selection is based on the Bayesian Information Criterion (BIC). It can be changed to the penalized BIC (BIC3) or the weighted BIC (WBIC) using the argument `method`.
+* Summary table results are returned in tidy format and can be transformed to `flextable` objects using the argument `as.ft = TRUE`.
 
-# Stack plots
-mods |>
-  gg_jpoint(obs = TRUE, jp = TRUE, facets = "none")
+## 🇪🇸 Español
 
-# Hide observed
-mods |>
-  gg_jpoint(obs = FALSE, jp = TRUE, facets = "none")
+El objetivo de **joinpointR** es ajustar modelos de regresión *joinpoint* por grupos y generar resúmenes en formato *tidy* del Cambio Porcentual Anual (APC) y del Cambio Porcentual Anual Promedio (AAPC), facilitando el análisis de tendencias en estudios epidemiológicos.
 
-# Hide joinpoints
-mods |>
-  gg_jpoint(obs = TRUE, jp = FALSE, facets = "none")
+## Instalación
+
+La versión en desarrollo de `joinpointR` se puede descargar desde Github con el comando:
+
+``` r
+remotes::install_github("https://github.com/datos-ine/joinpointR")
 ```
 
-## Dependencies / Dependencias
-The package uses / El paquete utiliza:
+## Flujo de trabajo
+El paquete cuenta con un flujo de trabajo simple y reproducible:
+* Ajusta modelos de regresión joinpoint usando el método de *grid-search*.
+* Genera tablas de resumen con los joinpoints detectados, el cambio porcentual anual (APC) y su intervalo de confianza (IC), y el cambio porcentual anual promedio (AAPC) y su IC.
+* Opcionalmente, se puede extraer el APC, AAPC y Criterio de Información Bayesiano de un modelo o lista de modelos.
+* Genera gráficos de resumen.
 
-* `segmented` for fitting jointpoint regression models / para regresión joinpoint
-* `dplyr`, `purrr`, `tidyr`, `tibble` for data management / para manipulación de datos
-* `ggplot2` for plotting results / para graficar resultados
-* `flextable` for summary tables / para tablas formateadas
+## Funciones principales
+* `model_jp_grid()` y `model_jp()` → Ajustan modelos de regresión joinpoint según niveles de hasta dos variables categóricas.
+* `get_summary()`, `get_apc()`, y `get_aapc()` → Devuelven una tabla resumen para un modelo o lista de modelos de clase `"model_jp"`.
+* `gg_jpoint()` → Genera gráficos de resumen para un modelo o lista de modelos de clase `"model_jp"`.
 
-## Notes / Notas
-* The response variable is log-transformed / La variable respuesta se transforma logarítmicamente
-* Model selection is based on the Bayesian Information Criterion (BIC) / La selección de modelos se basa en el Criterio de Información Bayesiano (BIC)
-* When `step = FALSE` fits a joinpoint regression model with the number of joinpoints specified in `k`/ Cuando `step = FALSE` ajusta una regresión joinpoint para el número de joinpoints especificados en `k`.
-* Results are returned in tidy format / Los resultados se devuelven en formato tidy para facilitar su uso en análisis reproducibles
+## Ejemplo
+
+``` r
+# Cargar paquetes
+library(joinpointR)
+
+# Cargar datos
+data(hiv_data)
+
+data_mod <- hiv_data |>
+    dplyr::filter(admin == "ARG")
+
+# Ajustar modelos
+mods <- model_jp_grid(data = data_mod, rate = "hiv_rate", time = "year", group = "sex")
+
+# BIC
+bic_jp(mods)
+
+# Tabla resumen
+get_summary(mods)
+
+# Graficar resultados
+gg_jpoint(mods)
+``` 
+
+## Notas
+* La variable respuesta se transforma logarítmicamente.
+* La selección de modelos está basada en el Criterio de Información Bayesian(BIC). Se puede cambiar al BIC penalizado (BIC3) o BIC ponderado (WBIC) usando el argumento `method`.
+* Las tablas de resumen se presentan en formato *tidy* y pueden transformarse a objetos `flextable` usando el argument `as.ft = TRUE`.
 
 ## Licence / Licencia
 MIT License
 
 ## Author / Autora
 Tamara Ricardo
+
 Instituto Nacional de Epidemiología (INE), Argentina
+
 ORCID: https://orcid.org/0000-0002-0921-2611
+

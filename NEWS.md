@@ -1,37 +1,15 @@
-# joinpointR 1.1.0
+# joinpointR 2.0.0
 
-## Improvements
-- `model_jp()` now allows to set a minimun distance between joinpoint estimates using the `min_dist` argument (defaults to `min_dist = 3`).
-- `as_ft_jp()' now shows a blank cell for confidence intervals with NA values.
-
-
-# joinpointR 1.0.0
-
-## Improvements
-- Added package vignettes.
-- Added the example dataset `vih_data`.
-- `model_jp()` now accepts unquoted response and time variables. Messages and outputs have also been simplified.
-- `get_apc()` and `get_aapc()` now accept either a list of models or an individual model.
-- `summary_jp()` now returns a tibble; the flextable format has been moved to `as_ft_jp()`.
-- `gg_jpoint()` now supports faceting by one or two grouping variables, or no faceting at all. It also includes several colorblind-friendly palettes.
-
-# joinpointR 0.6.2
-
-
+* JoinpointR 2.0 is here!!!
 ## Improvements
 
-- Added the `step` argument to `model_jp()`.
-- Added support for multiple grouping variables in `model_jp()`. Internally,
-  the function creates a grouping variable based on their interaction.
+* `joinpointR` is now independent from `segmented`!
+* `model_jp()`, also known as `model_jp_grid()`, was reformulated to fit segmented linear regression models and select the best fit model using the grid-search method and the Bayesian Information Criterion (BIC).
+* `get_summary()`, `get_apc()`, and `get_aapc()` now allow presenting results as `flextable` objects.
+* `gg_jpoint()` was optimized, adding new geometries and coloring schemes, as well as greater flexibility to modify default settings.
 
-## Bug fixes
-- Fixed issues when merging grouping variables.
-- Fixed output issues in `get_apc()`.
+## New features
 
-
-# joinpointR 0.5.0
-
-## Improvements
-
-- Added `gg_jpoint()`.
-- Improved language handling in `summary_jp()`.
+* `bic_jp()`: Displays the BIC, penalized BIC (BIC3), and weighted BIC (WBIC) of a model or a list of models fitted with `model_jp()`.
+* `plot_cbpal()`: Displays the available colorblind-friendly palettes.
+* `scale_cbpal()`, `scale_cbpal_color()`, `scale_cbpal_colour()`, and `scale_cbpal_fill()`: Allows changing the default color scheme to a predefined colorblind-friendly palette.

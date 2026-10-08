@@ -3,23 +3,27 @@
 \docType{data}
 \name{hiv_data}
 \alias{hiv_data}
-\title{Simulated HIV rates}
+\title{HIV Incidence Rates in Argentina by Sex and Jurisdiction}
 \format{
-A data frame with 160 rows and 4 variables:
+A data frame with 4 variables:
 \describe{
-\item{year}{Calendar year.}
-\item{region}{Geographic region.}
-\item{sex}{Sex ("Male" or "Female").}
-\item{hiv_rate}{Simulated HIV rate.}
+\item{admin}{Administrative division or jurisdiction name.}
+\item{year}{Calendar year of observation.}
+\item{sex}{Biological sex (male, female, or both sexes).}
+\item{hiv_rate}{Incidence rate per 100,000 inhabitants.}
 }
 }
 \source{
-Simulated data.
+\url{https://datos.gob.ar}
 }
 \usage{
 hiv_data
 }
 \description{
-Simulated annual HIV rates by region and sex from 2010 to 2025.
+HIV Incidence Rates in Argentina by Sex and Jurisdiction
+}
+\details{
+A dataset containing HIV incidence rates for males, females, and both sexes
+combined, covering the national level as well as individual jurisdictions.
 }
 \keyword{datasets}
